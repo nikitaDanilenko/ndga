@@ -11,7 +11,7 @@ Assuming that this repository has been cloned
 to `~/ndga/`, a simple interactive way to use it is the following.
 
 ~~~{.sh}
-bash> cd ndga
+bash> cd ~/ndga
 bash> kics2
 kics2> :set v0
 kics2> :set +interactive
