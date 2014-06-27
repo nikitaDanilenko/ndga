@@ -1,0 +1,78 @@
+This module is used for the computation of maximum matchings.
+
+``` 
+module Matching 
+  ( maximumMatching, maximumMatchingWith, augmentBy, alternatingPath, augmentingPath ) 
+  where
+```
+
+``` 
+import Dequeue      ( listToDeq, matchHead, snoc )
+import SearchTree   ( Strategy, bfsStrategy )
+import SetFunctions ( set2With, isEmpty, chooseValue )
+```
+
+``` 
+import Graph        ( Graph, Vertex, Path, isEdge, xorBiEdges, noSuccessors, edgesOnPath,
+                      graphSize, emptyGraph )
+import VertexSet    ( VertexSet, empty, insert, remove, inSet )
+```
+
+This function non-deterministically searches for a path from a vertex to
+a vertex set through a list of graphs. The resulting path (in case of
+success) consists of edges that are contained in the corresponding graph
+in the list. This is to say that the edge between vertex *i* and *i+1*
+is contained in the graph list at position *i mod size*, where *size* is
+the length of the list.
+
+``` 
+alternatingPath :: [Graph] -> Vertex -> VertexSet -> Path
+alternatingPath grs from ts 
+  | null grs  = failed
+  | otherwise = find empty from (listToDeq grs) where
+
+   find vis s grsq
+     | s `inSet` ts                        = [s]
+     | isEdge g s i && not (i `inSet` vis) = s : find (insert s vis) i (g `snoc` rest)
+     where  i free
+            Just (g, rest) = matchHead grsq
+```
+
+This function updates the matching and its complement using an
+augmenting path.
+
+``` 
+augmentBy :: Path -> Graph -> Graph -> (Graph, Graph)
+augmentBy path m notM = (m `xorBiEdges` es, notM `xorBiEdges` es)
+  where es = edgesOnPath path
+```
+
+Given a matching and its complement this function non-deterministically
+computes an augmenting path if such a path exists.
+
+``` 
+augmentingPath :: Graph -> Graph -> Path
+augmentingPath m notM | s `inSet` unc = alternatingPath [notM, m] s (s `remove` unc)
+   where unc = noSuccessors m
+         s free
+```
+
+The maximum matching function parametrised over the search strategy for
+paths. This function introduces additional non-determinism in the choice
+of the augmenting path.
+
+``` 
+maximumMatchingWith :: Strategy Path -> Graph -> Graph
+maximumMatchingWith strategy g = go (emptyGraph (graphSize g), g) where
+
+   go (m, notM) | isEmpty ps = m
+                | otherwise  = go (augmentBy (chooseValue ps) m notM)
+                where ps = set2With strategy augmentingPath m notM
+```
+
+A maximum matching function that uses the breadth-first strategy.
+
+``` 
+maximumMatching :: Graph -> Graph
+maximumMatching = maximumMatchingWith bfsStrategy
+```
