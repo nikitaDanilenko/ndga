@@ -4,11 +4,12 @@ simple path search algorithm and some small example graphs.
 
 ``` 
 module Graph 
-  ( Edge, Vertex, Path, Graph, showGraph, showEdges, emptyGraph, mkGraph, mkGraphFromAdjacency,
+  ( Edge, Vertex, Path, Graph, showGraph, graphEdges, emptyGraph, mkGraph, mkGraphFromAdjacency,
     graphToAdjacencyList, successors, vertices, noSuccessors, graphSize, addEdge, addBiEdge, 
     removeEdge, removeBiEdge, xorEdge, xorBiEdge, xorEdges, xorBiEdges, isEdge, isPathIn, 
     isEmptyGraph, transpose, graphUnion, graphIntersection, symmetrise, mkSymmetricGraph,
-    edgesOnPath, reachable, path, graph1, graph2, graph3, graph4, graph5, graph6, graph7 )
+    edgesOnPath, reachable, path, pathToSingle, inSameComponent, twoPathsCycle, predecessors,
+    graph1, graph2, graph3, graph4, graph5, graph6, graph7 )
   where
 ```
 
@@ -19,7 +20,7 @@ import List      ( sortBy, nub )
 ```
 
 ``` 
-import VertexSet ( Vertex, VertexSet, vertexListToSet, empty, inSet, insert )
+import VertexSet ( Vertex, VertexSet, vertexListToSet, empty, inSet, insert, singleton )
 ```
 
 Edges are pairs of vertices.
@@ -66,8 +67,8 @@ showGraph = unlines . zipWith (\i line -> unwords [show i, ":", show line]) [0..
 This function returns the list of edges of a graph.
 
 ``` 
-showEdges :: Graph -> [Edge]
-showEdges = concat . eltsFM . mapFM (zip . repeat) . graphFM
+graphEdges :: Graph -> [Edge]
+graphEdges = concat . eltsFM . mapFM (zip . repeat) . graphFM
 ```
 
 This function creates an empty graph with a specified number of
@@ -108,8 +109,8 @@ graphToAdjacencyList :: Graph -> [(Vertex, [Vertex])]
 graphToAdjacencyList = fmToList . graphFM
 ```
 
-Simple graph operations.
-========================
+Single step graph operations.
+=============================
 
 Computes the successors of a vertex in a graph. When a vertex is not
 contained in a graph, this function returns the empty list.
@@ -117,6 +118,15 @@ contained in a graph, this function returns the empty list.
 ``` 
 successors :: Graph -> Vertex -> [Vertex]
 successors (Graph g) = lookupWithDefaultFM g []
+```
+
+Computes the predecessors of a vertex in a graph. This function is
+declarative, but rather inefficient, since computes (parts of) the
+transposed graph.
+
+``` 
+predecessors :: Graph -> Vertex -> [Vertex]
+predecessors = successors . transpose
 ```
 
 Returns the vertices of a graph.
@@ -215,6 +225,9 @@ isPathIn :: Path -> Graph -> Bool
 isPathIn ps gr = all (uncurry (isEdge gr)) (edgesOnPath ps)
 ```
 
+Additional graph operations
+===========================
+
 This function transposes a graph, i.e. flips all the edges.
 
 ``` 
@@ -287,6 +300,34 @@ path g from ts = find empty from where
   find vis s | s `inSet` ts                         = [s]
              | isEdge g s i && not (i `inSet` vis)  = s : find (insert s vis) i
              where i free
+```
+
+This function calls `path` with a singleton target set.
+
+``` 
+pathToSingle :: Graph -> Vertex -> Vertex -> Path
+pathToSingle g from t = path g from (vertexListToSet [t])
+```
+
+This function checks whether two vertices are contained in the same
+strongly connected component.
+
+``` 
+inSameComponent :: Graph -> Vertex -> Vertex -> Success
+inSameComponent g s t | reachable g s (singleton t) = reachable g t (singleton s)
+```
+
+With `onCycle` one can obtain a cycle that contains the given vertices,
+in case such a cycle exists. However, this function finds only those
+cycles that consist exactly of two paths, namely a path from the first
+vertex to the second followed by a path from the second vertex to the
+first. This is important when the start vertex is the same as the target
+vertex, since in this case exactly the trivial cycle is found and not
+all cycles containing the vertex.
+
+``` 
+twoPathsCycle :: Graph -> Vertex -> Vertex -> [Vertex]
+twoPathsCycle g s t = pathToSingle g s t ++ tail (pathToSingle g t s)
 ```
 
 Example graphs

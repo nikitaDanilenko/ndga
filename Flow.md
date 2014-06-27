@@ -3,7 +3,7 @@ This module is used for the computation of maximal flows in a network.
 ``` 
 module Flow 
   ( Network, mkNetwork, graph, source, sink, capacity, Path ( .. ), augmentBy, augmenting,
-    maximalFlowWith, maximalFlowDFS, maximalFlowEdmondsKarp, network1, network2, network3 ) 
+    maximalFlowWith, maximalFlowDFS, maximalFlowBFS, network1, network2, network3 ) 
   where
 
 import FiniteMap      ( FM, intersectFM )
@@ -146,12 +146,12 @@ maximalFlowDFS :: Network Int -> EdgeMap Int
 maximalFlowDFS = maximalFlowWith dfsStrategy
 ```
 
-This function searches for maximal flows using the Edmonds-Karp
-(breadth-first) strategy.
+This function searches for maximal flows using the breadth-first
+strategy.
 
 ``` 
-maximalFlowEdmondsKarp :: Network Int -> EdgeMap Int
-maximalFlowEdmondsKarp = maximalFlowWith bfsStrategy
+maximalFlowBFS :: Network Int -> EdgeMap Int
+maximalFlowBFS = maximalFlowWith bfsStrategy
 ```
 
 Example networks

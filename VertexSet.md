@@ -3,7 +3,8 @@ of vertices.
 
 ``` 
 module VertexSet 
- ( Vertex, VertexSet, empty, insert, insertAll, inSet, remove, vertexListToSet, vertexSetToList ) 
+ ( Vertex, VertexSet, empty, insert, insertAll, inSet, remove, vertexListToSet, vertexSetToList,
+   singleton ) 
  where
 ```
 
@@ -66,6 +67,13 @@ elements are removed automatically.
 ``` 
 vertexListToSet :: [Vertex] -> VertexSet
 vertexListToSet xs = insertAll xs empty
+```
+
+Creates a vertex set that contains exactly one element.
+
+``` 
+singleton :: Vertex -> VertexSet
+singleton v = vertexListToSet [v]
 ```
 
 Turns a set of vertices into a list of vertices.
