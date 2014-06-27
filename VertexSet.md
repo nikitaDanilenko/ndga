@@ -5,6 +5,12 @@ module VertexSet
  ( Vertex, VertexSet, empty, insert, insertAll, inSet, remove, vertexListToSet, vertexSetToList ) 
  where
 ~~~
+=======
+   
+> module VertexSet 
+>  ( Vertex, VertexSet, empty, insert, insertAll, inSet, remove, vertexListToSet, vertexSetToList ) 
+>  where
+>>>>>>> 170e978529e2666ab816e6e77c10eed92bdb1ebe
 
 > import FiniteMap ( FM, emptyFM, addToFM, elemFM, delFromFM, keysFM )
 
