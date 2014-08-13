@@ -7,7 +7,7 @@ module MapArithmetics ( swap, (.+.), (.-.), (*>), (!), del, showEdgeMap, fromLis
 
 ``` 
 import FiniteMap ( FM, listToFM, keyOrder, fmToListPreOrder, plusFM_C, mapFM, 
-                   lookupWithDefaultFM, keysFM, intersectFM, addListToFM, emptyFM )
+                   lookupWithDefaultFM, keysFM, addListToFM, emptyFM )
 
 import List      ( sum, intercalate )
 ```
