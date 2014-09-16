@@ -1,9 +1,9 @@
-This module is used for the computation of maximal flows in a network.
+This module is used for the computation of maximum flows in a network.
 
 ``` 
 module Flow 
   ( Network, mkNetwork, graph, source, sink, capacity, Path ( .. ), augmentBy, augmenting,
-    maximalFlowWith, maximalFlowDFS, maximalFlowBFS, network1, network2, network3 ) 
+    maximumFlowWith, maximumFlowDFS, maximumFlowBFS, network1, network2, network3 ) 
   where
 
 import FiniteMap      ( FM, intersectFM )
@@ -77,7 +77,7 @@ from a vertex following an edge with a given weight to a given path.
 data Path a = Final Vertex | From Vertex a (Path a)
 ```
 
-Flow improvement and maximal flows
+Flow improvement and maximum flows
 ==================================
 
 This function non-deterministically computes an augmenting path with
@@ -127,8 +127,8 @@ if no such path exists. This function introduces additional
 non-determinism in the choice of the augmenting path.
 
 ``` 
-maximalFlowWith :: Strategy (Path Int) -> Network Int -> EdgeMap Int
-maximalFlowWith str (Network _ s t original) = go (original, empty) where
+maximumFlowWith :: Strategy (Path Int) -> Network Int -> EdgeMap Int
+maximumFlowWith str (Network _ s t original) = go (original, empty) where
 
   go (cf, flow) 
      | isEmpty ps = flow
@@ -139,19 +139,19 @@ maximalFlowWith str (Network _ s t original) = go (original, empty) where
   findAugmenting = augmenting s t
 ```
 
-This function searches for maximal flows using the depth-first strategy.
+This function searches for maximum flows using the depth-first strategy.
 
 ``` 
-maximalFlowDFS :: Network Int -> EdgeMap Int
-maximalFlowDFS = maximalFlowWith dfsStrategy
+maximumFlowDFS :: Network Int -> EdgeMap Int
+maximumFlowDFS = maximumFlowWith dfsStrategy
 ```
 
-This function searches for maximal flows using the breadth-first
+This function searches for maximum flows using the breadth-first
 strategy.
 
 ``` 
-maximalFlowBFS :: Network Int -> EdgeMap Int
-maximalFlowBFS = maximalFlowWith bfsStrategy
+maximumFlowBFS :: Network Int -> EdgeMap Int
+maximumFlowBFS = maximumFlowWith bfsStrategy
 ```
 
 Example networks
